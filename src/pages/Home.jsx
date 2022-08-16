@@ -1,107 +1,120 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useRef } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
-import axios from 'axios';
-import qs from 'qs';
+import qs from "qs";
 
-import { SearchContext } from '../App';
-import Categories from '../components/Categories';
-import Sort from '../components/Sort';
-import PizzaBlock from '../components/PizzaBlock';
-import Skeleton from '../components/PizzaBlock/Skeleton';
-import PaginationBlock from '../components/PaginationBlock';
+import Categories from "../components/Categories";
+import Sort from "../components/Sort";
+import PizzaBlock from "../components/PizzaBlock";
+import Skeleton from "../components/PizzaBlock/Skeleton";
+import PaginationBlock from "../components/PaginationBlock";
 
 import {
-    setCategoryId,
-    setSortType,
-    setCurrentPage,
-    setAllFilters,
-} from '../redux/slices/filterSlice';
+  setCategoryId,
+  setSortType,
+  setCurrentPage,
+  setAllFilters,
+} from "../redux/slices/filterSlice";
+
+import { fetchItems } from "../redux/slices/requestSlice";
 
 function Home() {
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-    const isSearchFiltered = useRef(false);
-    const isMounted = useRef(false);
+  const filtersSet = useRef(false);
 
-    const { categoryId, sortType, currentPage } = useSelector((state) => state.filterReducer);
+  const didMount = useRef(false);
 
-    const { searchValue } = React.useContext(SearchContext);
+  const { categoryId, sortType, currentPage, searchValue } = useSelector(
+    (state) => state.filterReducer
+  );
 
-    const [items, setItems] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
+  const { items, status } = useSelector((state) => state.requestReducer);
 
-    useEffect(() => {
-        // console.log('search string generator', isMounted.current);
-        if (isMounted.current) {
-            const queryString = qs.stringify({
-                sortProperty: sortType.sortProperty,
-                categoryId,
-                currentPage,
-            });
-            navigate('?' + queryString);
-        }
-        isMounted.current = true;
-    }, [categoryId, sortType.sortProperty, currentPage]);
+  function pizzasRequest() {
+    const url_page = "page=" + currentPage + "&limit=4";
+    const url_category = categoryId !== 0 ? "&category=" + categoryId : "";
+    const url_sort = "&sortBy=" + sortType.sortProperty;
+    const url_search = searchValue === "" ? "" : "&search=" + searchValue;
 
-    useEffect(() => {
-        // console.log('search dispatch');
-        const str = window.location.search;
-        if (str) {
-            const params = qs.parse(str.substring(1));
-            dispatch(setAllFilters(params));
-            isSearchFiltered.current = true;
-        }
-    }, []);
+    dispatch(fetchItems({ url_page, url_category, url_sort, url_search }));
+  }
 
-    useEffect(() => {
-        // console.log('fetching, search filtered:', isSearchFiltered.current);
-        window.scrollTo(0, 0);
-        if (!isSearchFiltered.current) {
-            setIsLoading(true);
+  useEffect(() => {
+    const str = window.location.search;
+    if (str) {
+      const params = qs.parse(str.substring(1));
+      dispatch(setAllFilters(params));
+      if (
+        sortType.sortProperty !== params.sortProperty ||
+        categoryId !== Number(params.categoryId) ||
+        currentPage !== Number(params.currentPage)
+      ) {
+        filtersSet.current = true;
+      }
+    }
+  }, []);
 
-            var url = 'https://62b317614f851f87f453f621.mockapi.io/items?';
-            url += 'page=' + currentPage + '&limit=4';
-            url += categoryId !== 0 ? '&category=' + categoryId : '';
-            url += '&sortBy=' + sortType.sortProperty;
-            url += searchValue === '' ? '' : '&search=' + searchValue;
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    if (!filtersSet.current) {
+      pizzasRequest();
+    }
 
-            axios.get(url).then((response) => {
-                setItems(response.data);
-                setIsLoading(false);
-            });
-        }
+    filtersSet.current = false;
+  }, [categoryId, sortType.sortProperty, currentPage, searchValue]);
 
-        isSearchFiltered.current = false;
-    }, [categoryId, sortType.sortProperty, currentPage, searchValue]);
+  useEffect(() => {
+    console.log("search string generator", didMount.current);
 
-    // console.log(categoryId, sortType, currentPage, searchValue);
+    if (didMount.current) {
+      const queryString = qs.stringify({
+        sortProperty: sortType.sortProperty,
+        categoryId,
+        currentPage,
+      });
+      navigate("?" + queryString);
+    }
+    didMount.current = true;
+  }, [categoryId, sortType, currentPage]);
 
-    return (
+  return (
+    <>
+      {status === "error" ? (
+        <div className="content__error">
+          <h2>Ошибка при загрузке :(</h2>
+          <p>Сервер не доступен</p>
+        </div>
+      ) : (
         <>
-            <div className="content__top">
-                <Categories
-                    categoryId={categoryId}
-                    onClickCategory={(i) => dispatch(setCategoryId(i))}
-                />
-                <Sort sortType={sortType.sortId} onClickSort={(i) => dispatch(setSortType(i))} />
-            </div>
-            <h2 className="content__title">Все пиццы</h2>
-            <div className="content__items">
-                {isLoading
-                    ? [...new Array(4)].map((_, i) => <Skeleton key={i} />)
-                    : items.map((obj) => <PizzaBlock key={obj.id} {...obj} />)}
-            </div>
-            <div className="content__bottom">
-                <PaginationBlock
-                    currentPage={currentPage}
-                    onChangePage={(page) => dispatch(setCurrentPage(page))}
-                />
-            </div>
+          <div className="content__top">
+            <Categories
+              categoryId={categoryId}
+              onClickCategory={(i) => dispatch(setCategoryId(i))}
+            />
+            <Sort
+              sortType={sortType.sortId}
+              onClickSort={(i) => dispatch(setSortType(i))}
+            />
+          </div>
+          <h2 className="content__title">Все пиццы</h2>
+          <div className="content__items">
+            {status === "loading"
+              ? [...new Array(4)].map((_, i) => <Skeleton key={i} />)
+              : items.map((obj) => <PizzaBlock key={obj.id} {...obj} />)}
+          </div>
+          <div className="content__bottom">
+            <PaginationBlock
+              currentPage={currentPage}
+              onChangePage={(page) => dispatch(setCurrentPage(page))}
+            />
+          </div>
         </>
-    );
+      )}
+    </>
+  );
 }
 
 export default Home;

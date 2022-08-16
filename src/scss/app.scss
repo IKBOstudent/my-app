@@ -28,6 +28,28 @@ body {
     margin: 35px 0;
   }
 
+  &__error {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 40px auto;
+    max-width: 560px;
+    text-align: center;
+    
+    h2 {
+      font-size: 32px;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 18px;
+      line-height: 145.4%;
+      letter-spacing: 0.01em;
+      color: #777777;
+    }
+  }
+
   &__items {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -214,7 +236,6 @@ body {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      width: 13%;
 
       &-minus {
         svg {
@@ -248,7 +269,6 @@ body {
       display: flex;
       align-items: center;
       justify-content: flex-end;
-      width: 4%;
 
       .button {
         border-color: darken($color: $gray-line, $amount: 10);
