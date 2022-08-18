@@ -15,14 +15,14 @@ type pizzaBlockProps = {
   price: number;
 };
 
-function PizzaBlock({
+export const PizzaBlock = ({
   id,
   title,
   price,
   imageUrl,
   types,
   sizes,
-}: pizzaBlockProps) {
+}: pizzaBlockProps) => {
   const dispatch = useDispatch();
 
   const { items } = useSelector((state: RootState) => state.cartReducer);
@@ -109,6 +109,4 @@ function PizzaBlock({
       </div>
     </div>
   );
-}
-
-export default PizzaBlock;
+};

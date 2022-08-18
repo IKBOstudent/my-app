@@ -1,27 +1,20 @@
 import { useDispatch } from "react-redux";
+
 import {
   addItem,
   decrementItemAmount,
   removeItem,
 } from "../redux/slices/cart/slice";
+import { TCartItem } from "../redux/slices/cart/types";
 
-type cartItemProps = {
-  imageUrl: string;
-  title: string;
-  type: number;
-  size: number;
-  price: number;
-  amount: number;
-};
-
-function CartItem({
+export const CartItem = ({
   imageUrl,
   title,
   type,
   size,
   price,
   amount,
-}: cartItemProps) {
+}: TCartItem) => {
   const dispatch = useDispatch();
 
   return (
@@ -137,6 +130,4 @@ function CartItem({
       </div>
     </div>
   );
-}
-
-export default CartItem;
+};

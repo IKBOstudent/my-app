@@ -1,11 +1,12 @@
 import { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
+
 import { selectCart } from "../redux/slices/cart/slice";
 
-import SearchBlock from "./SearchBlock";
+import { SearchBlock } from "./SearchBlock";
 
-function Header() {
+export const Header = () => {
   const { items, totalAmount, totalPrice } = useSelector(selectCart);
   const didMount = useRef(false);
 
@@ -76,6 +77,4 @@ function Header() {
       </div>
     </div>
   );
-}
-
-export default Header;
+};

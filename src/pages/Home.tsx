@@ -4,12 +4,6 @@ import { useNavigate } from "react-router-dom";
 
 import qs from "qs";
 
-import Categories from "../components/Categories";
-import Sort from "../components/Sort";
-import PizzaBlock from "../components/PizzaBlock";
-import Skeleton from "../components/PizzaBlock/Skeleton";
-import PaginationBlock from "../components/PaginationBlock";
-
 import {
   setCategoryId,
   setSort,
@@ -20,6 +14,14 @@ import {
 import { fetchItems } from "../redux/slices/request/asyncActoins";
 import { RootState, UseAppDispatch } from "../redux/store";
 import { TPizza } from "../redux/slices/request/types";
+
+import {
+  Categories,
+  PaginationBlock,
+  PizzaBlock,
+  Skeleton,
+  Sort,
+} from "../components";
 
 function Home() {
   const navigate = useNavigate();
@@ -84,15 +86,21 @@ function Home() {
       navigate("?" + queryString);
     }
     didMount.current = true;
-  }, [categoryId, sort, currentPage]);
+  }, [categoryId, sort, currentPage, navigate]);
 
-  const onClickCategory = useCallback((i: number) => {
-    dispatch(setCategoryId(i));
-  }, []);
+  const onClickCategory = useCallback(
+    (i: number) => {
+      dispatch(setCategoryId(i));
+    },
+    [dispatch]
+  );
 
-  const onClickSort = useCallback((i: number) => {
-    dispatch(setSort(i));
-  }, []);
+  const onClickSort = useCallback(
+    (i: number) => {
+      dispatch(setSort(i));
+    },
+    [dispatch]
+  );
 
   if (status === "error") {
     return (

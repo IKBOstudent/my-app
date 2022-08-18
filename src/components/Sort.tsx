@@ -5,7 +5,7 @@ type sortProps = {
   onClickSort: (i: number) => void;
 };
 
-const Sort = memo(({ sortId, onClickSort }: sortProps) => {
+export const Sort = memo(({ sortId, onClickSort }: sortProps) => {
   const [visible, setVisible] = useState(false);
   const sortRef = useRef<HTMLDivElement>(null);
 
@@ -74,5 +74,3 @@ const Sort = memo(({ sortId, onClickSort }: sortProps) => {
     </div>
   );
 });
-
-export default Sort;

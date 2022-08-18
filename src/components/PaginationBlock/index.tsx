@@ -7,7 +7,10 @@ type paginationProps = {
   onChangePage: (page: number) => void;
 };
 
-function PaginationBlock({ currentPage, onChangePage }: paginationProps) {
+export const PaginationBlock = ({
+  currentPage,
+  onChangePage,
+}: paginationProps) => {
   return (
     <ReactPaginate
       className={styles.root}
@@ -18,9 +21,6 @@ function PaginationBlock({ currentPage, onChangePage }: paginationProps) {
       pageCount={3}
       previousLabel="<"
       forcePage={currentPage - 1}
-      //   renderOnZeroPageCount={null}
     />
   );
-}
-
-export default PaginationBlock;
+};
