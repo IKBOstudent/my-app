@@ -1,17 +1,18 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { getCartFromLS } from "../../../utils/cartFromLocalStorage";
+import { RootState } from "../../store";
+import { ICartState, TCartItem } from "./types";
 
-const initialState = {
-  items: [],
-  totalAmount: 0,
-  totalPrice: 0,
-};
+const LS_cart = getCartFromLS();
+
+const initialState: ICartState = LS_cart;
 
 export const cartSlice = createSlice({
   name: "cart",
   initialState,
 
   reducers: {
-    addItem(state, action) {
+    addItem(state, action: PayloadAction<TCartItem>) {
       const { imageUrl, title, type, size, price } = action.payload;
       const prev_obj_index = state.items.findIndex((obj) => {
         return obj.title === title && obj.type === type && obj.size === size;
@@ -32,7 +33,15 @@ export const cartSlice = createSlice({
       state.totalAmount++;
     },
 
-    decrementItemAmount(state, action) {
+    decrementItemAmount(
+      state,
+      action: PayloadAction<{
+        title: string;
+        type: number;
+        size: number;
+        price: number;
+      }>
+    ) {
       const { title, type, size, price } = action.payload;
       const prev_obj_index = state.items.findIndex((obj) => {
         return obj.title === title && obj.type === type && obj.size === size;
@@ -47,7 +56,14 @@ export const cartSlice = createSlice({
       }
     },
 
-    removeItem(state, action) {
+    removeItem(
+      state,
+      action: PayloadAction<{
+        title: string;
+        type: number;
+        size: number;
+      }>
+    ) {
       const { title, type, size } = action.payload;
       const prev_obj_index = state.items.findIndex((obj) => {
         return obj.title === title && obj.type === type && obj.size === size;
@@ -69,7 +85,7 @@ export const cartSlice = createSlice({
   },
 });
 
-export const selectCart = (state) => state.cartReducer;
+export const selectCart = (state: RootState) => state.cartReducer;
 
 export const { addItem, decrementItemAmount, removeItem, clearItems } =
   cartSlice.actions;

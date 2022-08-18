@@ -1,22 +1,40 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-import { addItem } from "../../redux/slices/cartSlice";
+import { addItem } from "../../redux/slices/cart/slice";
+import { RootState } from "../../redux/store";
+import { TCartItem } from "../../redux/slices/cart/types";
 
-function PizzaBlock({ id, title, price, imageUrl, types, sizes }) {
+type pizzaBlockProps = {
+  id: string;
+  imageUrl: string;
+  title: string;
+  types: number[];
+  sizes: number[];
+  price: number;
+};
+
+function PizzaBlock({
+  id,
+  title,
+  price,
+  imageUrl,
+  types,
+  sizes,
+}: pizzaBlockProps) {
   const dispatch = useDispatch();
 
-  const { items } = useSelector((state) => state.cartReducer);
+  const { items } = useSelector((state: RootState) => state.cartReducer);
 
   function countItemAmount() {
-    const good_items = items.filter((obj) => obj.title === title);
+    const good_items = items.filter((obj: TCartItem) => obj.title === title);
     let counter = 0;
-    good_items.map((obj) => (counter += obj.amount));
+    good_items.map((obj: TCartItem) => (counter += obj.amount));
     return counter;
   }
 
-  const [activeType, setActiveType] = useState(0);
+  const [activeType, setActiveType] = useState(types[0]);
   const [activeSize, setActiveSize] = useState(0);
 
   return (
@@ -28,15 +46,16 @@ function PizzaBlock({ id, title, price, imageUrl, types, sizes }) {
         </Link>
         <div className="pizza-block__selector">
           <ul>
-            {types.map((type, i) => (
+            {types.map((type) => (
               <li
-                key={i}
+                key={type}
                 onClick={() => {
-                  setActiveType(i);
+                  setActiveType(type);
+                  console.log(type);
                 }}
-                className={i === activeType ? "active" : ""}
+                className={type === activeType ? "active" : ""}
               >
-                {!type ? "тонкое" : "традиционное"}
+                {type === 0 ? "тонкое" : "традиционное"}
               </li>
             ))}
           </ul>
@@ -65,6 +84,7 @@ function PizzaBlock({ id, title, price, imageUrl, types, sizes }) {
                   type: activeType,
                   size: sizes[activeSize],
                   price,
+                  amount: 0,
                 })
               );
             }}

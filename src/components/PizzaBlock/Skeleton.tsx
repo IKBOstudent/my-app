@@ -1,7 +1,7 @@
 import React from "react";
 import ContentLoader from "react-content-loader";
 
-const Skeleton = (props) => (
+const Skeleton = () => (
   <div className="pizza-block-wrapper">
     <ContentLoader
       className="pizza-block"
@@ -11,7 +11,6 @@ const Skeleton = (props) => (
       viewBox="0 0 280 460"
       backgroundColor="#f3f3f3"
       foregroundColor="#ecebeb"
-      {...props}
     >
       <circle cx="140" cy="120" r="120" />
       <rect x="0" y="255" rx="5" ry="5" width="280" height="30" />

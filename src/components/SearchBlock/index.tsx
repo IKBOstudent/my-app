@@ -1,19 +1,19 @@
-import React from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import debounce from "lodash.debounce";
 
-import { setSearchValue } from "../../redux/slices/filterSlice";
+import { setSearchValue } from "../../redux/slices/filter/slice";
 
 import styles from "./SearchBlock.module.scss";
 
 function SearchBlock() {
   const dispatch = useDispatch();
 
-  const [value, setValue] = React.useState("");
+  const [value, setValue] = useState("");
 
-  const inputRef = React.useRef();
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const searchDebounce = React.useCallback(
+  const searchDebounce = useCallback(
     debounce((str) => {
       dispatch(setSearchValue(str));
     }, 300),
@@ -59,7 +59,7 @@ function SearchBlock() {
       <input
         ref={inputRef}
         value={value}
-        onChange={(event) => {
+        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
           setValue(event.target.value);
           searchDebounce(event.target.value);
         }}
@@ -72,7 +72,7 @@ function SearchBlock() {
           onClick={() => {
             setValue("");
             dispatch(setSearchValue(""));
-            inputRef.current.focus();
+            inputRef.current?.focus();
           }}
           version="1.1"
           viewBox="0 0 24 24"

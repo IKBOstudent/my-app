@@ -1,9 +1,14 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 function PizzaInfo() {
-  const [data, setData] = useState();
+  const [data, setData] = useState<{
+    imageUrl: string;
+    title: string;
+    price: number;
+  }>();
+
   const params = useParams();
 
   const navigate = useNavigate();
@@ -23,7 +28,6 @@ function PizzaInfo() {
     fetchPizza();
   }, []);
 
-  console.log(data);
   if (!data) {
     return <h2>Загрузка...</h2>;
   }

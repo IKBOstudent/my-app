@@ -1,8 +1,7 @@
-import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import CartItem from "../components/CartItem";
-import { clearItems, selectCart } from "../redux/slices/cartSlice";
+import { clearItems, selectCart } from "../redux/slices/cart/slice";
 
 import CartEmpty from "../components/CartEmpty";
 
@@ -101,9 +100,21 @@ function Cart() {
           </div>
         </div>
         <div className="content__items">
-          {items.map((obj, i) => (
-            <CartItem key={i} {...obj} />
-          ))}
+          {items.map(
+            (
+              obj: {
+                imageUrl: string;
+                title: string;
+                type: number;
+                size: number;
+                price: number;
+                amount: number;
+              },
+              i: number
+            ) => (
+              <CartItem key={i} {...obj} />
+            )
+          )}
         </div>
         <div className="cart__bottom">
           <div className="cart__bottom-details">
